@@ -12,3 +12,5 @@ coins-bip32 = "0.7.0"
 coins-bip39 = "0.7.0"
 ethers = { git = "https://github.com/gakonst/ethers-rs" }
 hex = "0.4.3"
+serde = "1.0.144"
+serde_json = "1.0.85"

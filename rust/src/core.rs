@@ -1,4 +1,6 @@
 use hex::ToHex;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::str::FromStr;
 
 use coins_bip32::path::DerivationPath;
@@ -8,7 +10,9 @@ use ethers::core::{
     utils::{secret_key_to_address, to_checksum},
 };
 
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Wallet {
     address: String,
     private_key: String,
@@ -39,5 +43,14 @@ impl Wallet {
             private_key: private_key.encode_hex::<String>(),
             mnemonic: mnemonic.to_phrase()?,
         })
+    }
+
+    /// Append the serialized wallet to a file
+    pub fn append_to_file(&self, path: &str) -> eyre::Result<()> {
+        let mut file = OpenOptions::new().append(true).open(path)?;
+        let serialized = serde_json::json!(self).to_string();
+        writeln!(file, "{}", serialized)?;
+
+        Ok(())
     }
 }
