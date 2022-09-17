@@ -5,6 +5,7 @@ use std::path::Path;
 
 fn main() {
     let destination = "../out/wallets.jsonl";
+    let pretty_prefix = "0x000";
 
     // Create wallet storage file if not exists
     let path = Path::new(destination);
@@ -15,6 +16,8 @@ fn main() {
 
     // Generate wallets
     let wallet = core::Wallet::random().unwrap();
-    wallet.append_to_file(destination).unwrap();
-    dbg!(wallet);
+    // Check if the wallet is pretty
+    if wallet.address.starts_with(pretty_prefix) {
+        wallet.append_to_file(destination).unwrap();
+    }
 }

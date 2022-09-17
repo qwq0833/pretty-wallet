@@ -14,9 +14,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Wallet {
-    address: String,
-    private_key: String,
-    mnemonic: String,
+    pub address: String,
+    pub private_key: String,
+    pub mnemonic: String,
 }
 
 impl Wallet {
