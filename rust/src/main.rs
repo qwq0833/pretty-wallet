@@ -14,10 +14,14 @@ fn main() {
         File::create(path).unwrap();
     }
 
+    let now = std::time::Instant::now();
+
     // Generate wallets
     let wallet = core::Wallet::random().unwrap();
     // Check if the wallet is pretty
     if wallet.address.starts_with(pretty_prefix) {
         wallet.append_to_file(destination).unwrap();
     }
+
+    println!("执行时长: {} ms", now.elapsed().as_millis());
 }
