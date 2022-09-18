@@ -1,6 +1,7 @@
 use hex::ToHex;
-use std::fs::OpenOptions;
+use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
+use std::path::Path;
 use std::str::FromStr;
 
 use coins_bip32::path::DerivationPath;
@@ -47,10 +48,21 @@ impl Wallet {
 
     /// Append the serialized wallet to a file
     pub fn append_to_file(&self, path: &str) -> eyre::Result<()> {
+        Self::create_store_file(path);
+
         let mut file = OpenOptions::new().append(true).open(path)?;
         let serialized = serde_json::json!(self).to_string();
         writeln!(file, "{}", serialized)?;
 
         Ok(())
+    }
+
+    /// Create wallet store file if not exists
+    fn create_store_file(destination: &str) {
+        let path = Path::new(destination);
+        if !path.exists() {
+            create_dir_all(path.parent().unwrap()).unwrap();
+            File::create(path).unwrap();
+        }
     }
 }

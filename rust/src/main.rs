@@ -1,19 +1,9 @@
 mod core;
 
-use std::fs::{create_dir_all, File};
-use std::path::Path;
-
 fn main() {
     let destination = "../out/wallets.jsonl";
     let pretty_prefix = "0x000";
     let duration = 60 * 1000;
-
-    // Create wallet storage file if not exists
-    let path = Path::new(destination);
-    if !path.exists() {
-        create_dir_all(path.parent().unwrap()).unwrap();
-        File::create(path).unwrap();
-    }
 
     let now = std::time::Instant::now();
     let mut total_count = 0;
