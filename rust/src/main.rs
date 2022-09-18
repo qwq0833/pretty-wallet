@@ -7,8 +7,8 @@ use std::time::Duration;
 
 fn main() {
     let destination = "../out/wallets.jsonl";
-    let pretty_prefix = "0x000";
-    let duration = 60 * 1000;
+    let prefix = "0x000";
+    let duration = 60;
     let workers = num_cpus::get();
 
     println!("🚀 Pretty Wallet 正在启动, 即将开启 {} 个工作线程", workers);
@@ -16,7 +16,7 @@ fn main() {
     let mut handles: Vec<thread::JoinHandle<()>> = vec![];
 
     for _ in 0..workers {
-        let producer = Producer::new(duration, pretty_prefix, destination);
+        let producer = Producer::new(duration, prefix, destination);
         let handle = thread::spawn(move || {
             producer.start();
         });

@@ -7,17 +7,17 @@ static INDEX: AtomicUsize = AtomicUsize::new(1);
 pub struct Producer {
     key: String,
     duration: u128,
-    pretty_prefix: String,
+    prefix: String,
     destination: String,
 }
 
 impl Producer {
-    pub fn new(duration: u128, pretty_prefix: &str, destination: &str) -> Producer {
+    pub fn new(duration: u128, prefix: &str, destination: &str) -> Producer {
         let index = INDEX.fetch_add(1, Ordering::SeqCst);
         Producer {
             key: index.to_string(),
-            duration,
-            pretty_prefix: pretty_prefix.to_string(),
+            duration: duration * 1000,
+            prefix: prefix.to_string(),
             destination: destination.to_string(),
         }
     }
@@ -33,7 +33,7 @@ impl Producer {
         while now.elapsed().as_millis() < self.duration {
             let wallet = Wallet::random().unwrap();
             // Check if the wallet is pretty
-            if wallet.address.starts_with(&self.pretty_prefix) {
+            if wallet.address.starts_with(&self.prefix) {
                 wallet.append_to_file(&self.destination).unwrap();
                 pretty_count += 1;
             }
