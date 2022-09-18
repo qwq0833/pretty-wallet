@@ -30,7 +30,7 @@ impl Producer {
         let mut pretty_count = 0;
 
         // Continuous generate wallets
-        while now.elapsed().as_millis() < self.duration {
+        while self.duration == 0 || now.elapsed().as_millis() < self.duration {
             let wallet = Wallet::random().unwrap();
             // Check if the wallet is pretty
             if wallet.address.starts_with(&self.prefix) {

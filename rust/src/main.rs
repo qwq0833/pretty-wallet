@@ -2,16 +2,54 @@ mod core;
 mod producer;
 
 use crate::producer::Producer;
+use clap::Parser;
 use std::thread;
 use std::time::Duration;
 
-fn main() {
-    let destination = "../out/wallets.jsonl";
-    let prefix = "0x000";
-    let duration = 60;
-    let workers = num_cpus::get();
+/// 🍒 Pretty ethereum wallet generator
+#[derive(Parser, Debug)]
+#[clap(version)]
+struct Args {
+    /// Number of workers (default: number of logical cores)
+    #[clap(short, long, value_parser, default_value_t = num_cpus::get())]
+    workers: usize,
 
-    println!("🚀 Pretty Wallet 正在启动, 即将开启 {} 个工作线程", workers);
+    /// Prefix of the wallet address
+    #[clap(short, long, value_parser, default_value = "0x000000")]
+    prefix: String,
+
+    /// Number of execution duration in seconds (0 for infinite)
+    #[clap(short, long, value_parser, default_value_t = 60)]
+    duration: u128,
+
+    /// Path of wallet keystore file
+    #[clap(
+        short,
+        long,
+        value_parser,
+        default_value = "/tmp/pretty_keystore.jsonl"
+    )]
+    output: String,
+}
+
+fn main() {
+    let args = Args::parse();
+
+    let destination = &args.output;
+    let prefix = &args.prefix;
+    let duration = args.duration;
+    let workers = args.workers;
+
+    println!(
+        "🚀 Pretty Wallet 即将开启 {} 个工作线程, {}",
+        workers,
+        if duration == 0 {
+            "持续运行直到按下 Ctrl+C".to_string()
+        } else {
+            format!("运行 {} s 后停止", duration)
+        }
+    );
+    println!("🚀 匹配前缀 {}, 结果将输出到 {}", prefix, destination);
 
     let mut handles: Vec<thread::JoinHandle<()>> = vec![];
 
