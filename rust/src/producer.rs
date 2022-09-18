@@ -1,23 +1,30 @@
 use crate::core::Wallet;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Instant;
 
+static INDEX: AtomicUsize = AtomicUsize::new(1);
+
 pub struct Producer {
+    key: String,
     duration: u128,
     pretty_prefix: String,
     destination: String,
 }
 
 impl Producer {
-    pub fn new(duration: u128, pretty_prefix: String, destination: String) -> Producer {
+    pub fn new(duration: u128, pretty_prefix: &str, destination: &str) -> Producer {
+        let index = INDEX.fetch_add(1, Ordering::SeqCst);
         Producer {
+            key: index.to_string(),
             duration,
-            pretty_prefix,
-            destination,
+            pretty_prefix: pretty_prefix.to_string(),
+            destination: destination.to_string(),
         }
     }
 
     pub fn start(&self) {
         let now = Instant::now();
+        println!("🌱 线程 {} 开始运行", self.key);
 
         let mut total_count = 0;
         let mut pretty_count = 0;
@@ -35,7 +42,8 @@ impl Producer {
             // Print stats every 5000 wallets
             if total_count % 5000 == 0 {
                 println!(
-                    "已生成 {} 个钱包, 符合条件的有 {} 个, 执行时长 {} ms, 速度 {} 钱包/s",
+                    "[线程 {}] 已生成 {} 个钱包, 符合条件的有 {} 个, 执行时长 {} ms, 速度 {} 钱包/s",
+                    self.key,
                     total_count,
                     pretty_count,
                     now.elapsed().as_millis(),
@@ -45,7 +53,7 @@ impl Producer {
         }
 
         println!("============================================================");
-        println!("[执行结束]");
+        println!("[线程 {} 执行结束]", self.key);
         println!(
             "统计: 总共生成 {} 个钱包, 符合条件的有 {} 个",
             total_count, pretty_count

@@ -3,6 +3,7 @@ mod producer;
 
 use crate::producer::Producer;
 use std::thread;
+use std::time::Duration;
 
 fn main() {
     let destination = "../out/wallets.jsonl";
@@ -15,11 +16,12 @@ fn main() {
     let mut handles: Vec<thread::JoinHandle<()>> = vec![];
 
     for _ in 0..workers {
-        let producer = Producer::new(duration, pretty_prefix.to_string(), destination.to_string());
+        let producer = Producer::new(duration, pretty_prefix, destination);
         let handle = thread::spawn(move || {
             producer.start();
         });
         handles.push(handle);
+        thread::sleep(Duration::from_millis(1));
     }
 
     for handle in handles {
